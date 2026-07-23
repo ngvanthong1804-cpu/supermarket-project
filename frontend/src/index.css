@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-canvas text-ink font-sans;
+  }
+  h1, h2, h3 {
+    @apply font-display;
+  }
+}
+
+@layer utilities {
+  .price-tag {
+    position: relative;
+  }
+  .price-tag::before {
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 8px;
+    height: 8px;
+    border-radius: 9999px;
+    background: #F6F8F2;
+    border: 1.5px solid #E3E8DD;
+    z-index: 10;
+  }
+}
+
+@media print {
+  body * { visibility: hidden; }
+  #pos-receipt-print, #pos-receipt-print * { visibility: visible; }
+  #pos-receipt-print { position: absolute; left: 0; top: 0; }
+}
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #pos-receipt-print, #pos-receipt-print * {
+    visibility: visible;
+  }
+  #pos-receipt-print {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+}
