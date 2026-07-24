@@ -1,6 +1,6 @@
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import { LayoutDashboard, Package, ListTree, ShoppingBag, LogOut, Users, Tag, Truck, PackagePlus, Home, Image, MessageCircle, Menu, X, ShoppingBasket, Zap } from 'lucide-react';
+import { LayoutDashboard, Package, ListTree, ShoppingBag, LogOut, Users, Tag, Truck, PackagePlus, Home, Image, MessageCircle, Menu, X, ShoppingBasket, Zap, ScanFace, CalendarCheck } from 'lucide-react';
 import useAuthStore from '../store/authStore';
 import NotificationBell from '../components/common/NotificationBell';
 
@@ -17,6 +17,8 @@ const menuItems = [
     { path: '/admin/vouchers', label: 'Voucher', icon: Tag, roles: ['admin'] },
     { path: '/admin/banners', label: 'Banner', icon: Image, roles: ['admin'] },
     { path: '/admin/users', label: 'Người dùng', icon: Users, roles: ['admin'] },
+    { path: '/admin/face-register', label: 'Đăng ký khuôn mặt', icon: ScanFace, roles: ['admin'] },
+    { path: '/admin/face-attendance', label: 'Điểm danh', icon: CalendarCheck, roles: ['admin'] },
 ];
 
 export default function AdminLayout() {

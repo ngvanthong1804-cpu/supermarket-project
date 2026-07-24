@@ -33,5 +33,6 @@ app.use('/api/stats', require('./routes/stats.routes'));
 app.use('/api/chat', require('./routes/chat.routes'));
 app.use('/api/pos', require('./routes/pos.routes'));
 app.use('/api/my-addresses', require('./routes/userAddress.routes'));
+app.use('/api/face-attendance', require('./routes/faceAttendance.routes'));
 
 module.exports = app;

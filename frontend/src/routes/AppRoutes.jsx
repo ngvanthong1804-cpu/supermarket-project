@@ -26,6 +26,8 @@ import UserManage from '../pages/admin/UserManage';
 import VoucherManage from '../pages/admin/VoucherManage';
 import SupplierManage from '../pages/admin/SupplierManage';
 import StockImportManage from '../pages/admin/StockImportManage';
+import FaceRegister from '../pages/admin/FaceRegister';
+import FaceAttendance from '../pages/admin/FaceAttendance';
 
 export default function AppRoutes() {
     return (
@@ -98,6 +100,22 @@ export default function AppRoutes() {
                         }
                     />
                     <Route path="/admin/stock-imports" element={<StockImportManage />} />
+                    <Route
+                        path="/admin/face-register"
+                        element={
+                            <ProtectedRoute allowedRoles={['admin']}>
+                                <FaceRegister />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/admin/face-attendance"
+                        element={
+                            <ProtectedRoute allowedRoles={['admin']}>
+                                <FaceAttendance />
+                            </ProtectedRoute>
+                        }
+                    />
                     <Route
                         path="/admin/flash-sale"
                         element={
