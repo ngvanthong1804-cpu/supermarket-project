@@ -16,6 +16,8 @@ router.delete('/:id', verifyToken, checkRole('admin'), productController.deleteP
 router.post('/:id/images', verifyToken, checkRole('admin', 'staff'), productController.addProductImage);
 router.delete('/images/:imageId', verifyToken, checkRole('admin', 'staff'), productController.deleteProductImage);
 router.get('/barcode/:barcode', verifyToken, checkRole('admin', 'staff'), productController.getProductByBarcode);
+router.post('/:id/generate-barcode', verifyToken, checkRole('admin', 'staff'), productController.generateBarcode);
+router.post('/generate-barcodes-all', verifyToken, checkRole('admin'), productController.generateBarcodesForAll);
 
 // Giảm giá & Flash Sale (chỉ Admin quản lý)
 router.put('/:id/quick-discount', verifyToken, checkRole('admin'), productController.quickDiscount);

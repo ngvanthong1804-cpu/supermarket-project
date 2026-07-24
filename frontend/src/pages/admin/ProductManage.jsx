@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import categoryApi from '../../api/category.api';
 import adminApi from '../../api/admin.api';
-import { Plus, Pencil, Trash2, X } from 'lucide-react';
+import { Plus, Pencil, Trash2, X, Sparkles } from 'lucide-react';
+import { QRCodeSVG } from 'qrcode.react';
 import ImageUploader from '../../components/admin/ImageUploader';
 import ProductGallery from '../../components/admin/ProductGallery';
 import productApi from '../../api/product.api';
@@ -223,7 +224,36 @@ export default function ProductManage() {
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium mb-1">Mã vạch (tùy chọn)</label>
-                                    <input value={form.barcode} onChange={(e) => setForm({ ...form, barcode: e.target.value })} placeholder="VD: 8938512345678" className="w-full border rounded-md px-3 py-2" />
+                                    <div className="flex gap-2">
+                                        <input value={form.barcode} onChange={(e) => setForm({ ...form, barcode: e.target.value })} placeholder="VD: 8938512345678" className="w-full border rounded-md px-3 py-2" />
+                                        {editing && !form.barcode && (
+                                            <button
+                                                type="button"
+                                                onClick={async () => {
+                                                    try {
+                                                        const res = await productApi.generateBarcode(editing.id);
+                                                        setForm((f) => ({ ...f, barcode: res.data.barcode }));
+                                                        toast.success('Đã tạo mã vạch');
+                                                    } catch (err) {
+                                                        toast.error(err.message || 'Tạo mã thất bại');
+                                                    }
+                                                }}
+                                                title="Tự tạo mã vạch"
+                                                className="shrink-0 bg-primary/10 text-primary rounded-md px-3 flex items-center gap-1 text-sm"
+                                            >
+                                                <Sparkles size={14} /> Tự tạo
+                                            </button>
+                                        )}
+                                    </div>
+                                    {form.barcode && (
+                                        <div className="mt-2 flex items-center gap-3 bg-gray-50 border rounded-md p-3">
+                                            <QRCodeSVG value={form.barcode} size={72} />
+                                            <div className="text-xs text-gray-500">
+                                                <p className="font-mono text-gray-700">{form.barcode}</p>
+                                                <p>In mã này dán lên sản phẩm để quét tại quầy POS</p>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium mb-1">Giá gốc</label>

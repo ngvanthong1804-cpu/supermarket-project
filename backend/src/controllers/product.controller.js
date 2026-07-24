@@ -232,6 +232,42 @@ exports.getProductByBarcode = async (req, res) => {
         res.status(500).json({ success: false, message: err.message });
     }
 };
+
+function buildBarcodeForProduct(id) {
+    return `200${String(id).padStart(9, '0')}`;
+}
+
+exports.generateBarcode = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const [rows] = await db.query('SELECT id, barcode FROM products WHERE id = ?', [id]);
+        if (rows.length === 0) {
+            return res.status(404).json({ success: false, message: 'Không tìm thấy sản phẩm' });
+        }
+        if (rows[0].barcode) {
+            return res.json({ success: true, message: 'Sản phẩm đã có mã vạch', data: { barcode: rows[0].barcode } });
+        }
+        const barcode = buildBarcodeForProduct(id);
+        await db.query('UPDATE products SET barcode = ? WHERE id = ?', [barcode, id]);
+        res.json({ success: true, message: 'Đã tạo mã vạch', data: { barcode } });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+};
+
+exports.generateBarcodesForAll = async (req, res) => {
+    try {
+        const [rows] = await db.query('SELECT id FROM products WHERE barcode IS NULL OR barcode = ""');
+        for (const row of rows) {
+            const barcode = buildBarcodeForProduct(row.id);
+            await db.query('UPDATE products SET barcode = ? WHERE id = ?', [barcode, row.id]);
+        }
+        res.json({ success: true, message: `Đã tạo mã vạch cho ${rows.length} sản phẩm` });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+};
+
 // Giảm giá nhanh 1 sản phẩm (không giới hạn thời gian, áp dụng ngay trong danh sách quản lý)
 exports.quickDiscount = async (req, res) => {
     try {

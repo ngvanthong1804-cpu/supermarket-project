@@ -4,9 +4,10 @@ import productApi from '../../api/product.api';
 import posApi from '../../api/pos.api';
 import PosReceipt from '../../components/admin/PosReceipt';
 import BankQRCode from '../../components/common/BankQRCode';
-import { Search, Plus, Minus, Trash2, User, X, Printer } from 'lucide-react';
+import { Search, Plus, Minus, Trash2, User, X, Printer, Camera } from 'lucide-react';
 import useAuthStore from '../../store/authStore';
 import { ScanLine, Percent } from 'lucide-react';
+import BarcodeScannerModal from '../../components/admin/BarcodeScannerModal';
 
 export default function PosPage() {
     const { user } = useAuthStore();
@@ -14,6 +15,7 @@ export default function PosPage() {
     const [products, setProducts] = useState([]);
     const [cart, setCart] = useState([]); // [{product_id, name, price, basePrice, quantity, stock}]
     const [barcodeInput, setBarcodeInput] = useState('');
+    const [scannerOpen, setScannerOpen] = useState(false);
 
     const [customerKeyword, setCustomerKeyword] = useState('');
     const [customerResults, setCustomerResults] = useState([]);
@@ -62,12 +64,8 @@ export default function PosPage() {
     };
 
     // Quét mã vạch (dùng được với máy quét USB - hoạt động như bàn phím gõ nhanh + Enter)
-    const handleBarcodeSubmit = async (e) => {
-        e.preventDefault();
-        const code = barcodeInput.trim();
+    const lookupBarcode = async (code) => {
         if (!code) return;
-        setBarcodeInput('');
-
         try {
             const res = await productApi.getByBarcode(code);
             addToCart(res.data);
@@ -75,6 +73,19 @@ export default function PosPage() {
         } catch (err) {
             toast.error(err.message || 'Không tìm thấy sản phẩm với mã vạch này');
         }
+    };
+
+    const handleBarcodeSubmit = async (e) => {
+        e.preventDefault();
+        const code = barcodeInput.trim();
+        if (!code) return;
+        setBarcodeInput('');
+        await lookupBarcode(code);
+    };
+
+    const handleCameraScan = async (code) => {
+        setScannerOpen(false);
+        await lookupBarcode(code.trim());
     };
 
     // Sửa giá bán cho 1 dòng sản phẩm (giảm giá riêng ngay tại quầy, không vượt quá giá gốc)
@@ -152,16 +163,33 @@ export default function PosPage() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Cột trái: tìm & chọn sản phẩm */}
                 <div className="lg:col-span-2">
-                    <form onSubmit={handleBarcodeSubmit} className="relative mb-3">
-                        <input
-                            autoFocus
-                            value={barcodeInput}
-                            onChange={(e) => setBarcodeInput(e.target.value)}
-                            placeholder="Quét mã vạch sản phẩm (hoặc gõ tay rồi Enter)..."
-                            className="w-full border-2 border-primary/30 focus:border-primary rounded-md pl-9 pr-3 py-2.5 text-sm bg-primary-light/20"
+                    <div className="flex gap-2 mb-3">
+                        <form onSubmit={handleBarcodeSubmit} className="relative flex-1">
+                            <input
+                                autoFocus
+                                value={barcodeInput}
+                                onChange={(e) => setBarcodeInput(e.target.value)}
+                                placeholder="Quét mã vạch sản phẩm (hoặc gõ tay rồi Enter)..."
+                                className="w-full border-2 border-primary/30 focus:border-primary rounded-md pl-9 pr-3 py-2.5 text-sm bg-primary-light/20"
+                            />
+                            <ScanLine size={16} className="absolute left-3 top-3 text-primary" />
+                        </form>
+                        <button
+                            type="button"
+                            onClick={() => setScannerOpen(true)}
+                            title="Quét bằng camera"
+                            className="shrink-0 bg-primary text-white rounded-md px-3 flex items-center justify-center"
+                        >
+                            <Camera size={18} />
+                        </button>
+                    </div>
+
+                    {scannerOpen && (
+                        <BarcodeScannerModal
+                            onScan={handleCameraScan}
+                            onClose={() => setScannerOpen(false)}
                         />
-                        <ScanLine size={16} className="absolute left-3 top-3 text-primary" />
-                    </form>
+                    )}
 
                     <div className="relative mb-4">
                         <input
