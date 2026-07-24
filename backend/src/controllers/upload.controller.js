@@ -3,8 +3,8 @@ exports.uploadImage = (req, res) => {
         return res.status(400).json({ success: false, message: 'Không có file nào được tải lên' });
     }
 
-    // Trả về đường dẫn để lưu vào DB (VD: /uploads/162839...jpg)
-    const imageUrl = `${process.env.BASE_URL}/uploads/${req.file.filename}`;
+    // Cloudinary trả sẵn URL đầy đủ trong req.file.path
+    const imageUrl = req.file.path;
 
     res.json({
         success: true,
